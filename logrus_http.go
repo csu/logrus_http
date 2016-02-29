@@ -38,12 +38,12 @@ func (hook *HttpHook) Fire(entry *logrus.Entry) error {
   // add log line
   reqForm.Set(hook.RequestFormKey, line)
 
-  _, err = http.PostForm(hook.RequestEndpoint, reqForm)
+  resp, err = http.PostForm(hook.RequestEndpoint, reqForm)
   if err != nil {
     fmt.Fprintf(os.Stderr, "Unable to post line to server, %v", err)
     return err
   }
-
+  resp.Body.Close()
   return nil
 }
 
