@@ -19,7 +19,7 @@ type HttpHook struct {
 // `if err == nil { log.Hooks.Add(hook) }`
 func NewHttpHook(endpoint string, formKey string, requestExtraFields map[string]string,
 	extraLogFields map[string]interface{}) (*HttpHook, error) {
-	return &HttpHook{endpoint, formKey, extraLogFields}, nil
+	return &HttpHook{endpoint, formKey, requestExtraFields, extraLogFields}, nil
 }
 
 func (hook *HttpHook) Fire(entry *logrus.Entry) error {
