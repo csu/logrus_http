@@ -16,7 +16,7 @@ type HttpHook struct {
 // Creates a hook to be added to an instance of logger. This is called with
 // `hook, err := NewHttpHook("http://log-server/post_new_log", "logBody")`
 // `if err == nil { log.Hooks.Add(hook) }`
-func NewHttpHook(endpoint string, formKey string, extraFields map[string]string) (*HttpHook, error) {
+func NewHttpHook(endpoint string, formKey string, extraFields map[string]interface{}) (*HttpHook, error) {
   return &HttpHook{endpoint, formKey, extraFields}, nil
 }
 
