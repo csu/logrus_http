@@ -1,45 +1,50 @@
 package logrus_http
 
 import (
-  "github.com/Sirupsen/logrus"
-  "net/http"
-  "net/url"
+	"github.com/Sirupsen/logrus"
+	"net/http"
+	"net/url"
 )
 
 type HttpHook struct {
-  RequestEndpoint string
-  RequestFormKey string
-  RequestExtraFields map[string]interface{}
+	RequestEndpoint string
+	RequestFormKey string
+	RequestExtraFields map[string]string
+	LogExtraFields map[string]interface{}
 }
 
 // Creates a hook to be added to an instance of logger. This is called with
 // `hook, err := NewHttpHook("http://log-server/post_new_log", "logBody")`
 // `if err == nil { log.Hooks.Add(hook) }`
-func NewHttpHook(endpoint string, formKey string, extraFields map[string]interface{}) (*HttpHook, error) {
-  return &HttpHook{endpoint, formKey, extraFields}, nil
+func NewHttpHook(endpoint string, formKey string, requestExtraFields map[string]string,
+extraLogFields map[string]interface{}) (*HttpHook, error) {
+	return &HttpHook{endpoint, formKey, extraLogFields}, nil
 }
 
 func (hook *HttpHook) Fire(entry *logrus.Entry) error {
-  entry = entry.WithFields(hook.RequestExtraFields)
+	line, err := entry.WithFields(hook.LogExtraFields).String()
+	if err != nil {
+		return err
+	}
 
-  line, err := entry.String()
-  if err != nil {
-    return err
-  }
+	reqForm := url.Values{}
 
-  reqForm := url.Values{}
+	// add in extra fields, if any
+	for k, v := range hook.RequestExtraFields {
+		reqForm.Set(k, v)
+	}
 
-  // add log line
-  reqForm.Set(hook.RequestFormKey, line)
+	// add log line
+	reqForm.Set(hook.RequestFormKey, line)
 
-  resp, err := http.PostForm(hook.RequestEndpoint, reqForm)
-  if err != nil {
-    return err
-  }
-  resp.Body.Close()
-  return nil
+	resp, err := http.PostForm(hook.RequestEndpoint, reqForm)
+	if err != nil {
+		return err
+	}
+	resp.Body.Close()
+	return nil
 }
 
 func (hook *HttpHook) Levels() []logrus.Level {
-  return logrus.AllLevels
+	return logrus.AllLevels
 }
