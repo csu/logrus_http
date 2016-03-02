@@ -9,7 +9,7 @@ import (
 type HttpHook struct {
   RequestEndpoint string
   RequestFormKey string
-  RequestExtraFields map[string]string
+  RequestExtraFields map[string]interface{}
 }
 
 // Creates a hook to be added to an instance of logger. This is called with
