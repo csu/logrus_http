@@ -4,7 +4,6 @@ import (
   "github.com/Sirupsen/logrus"
   "net/http"
   "net/url"
-  "os"
 )
 
 type HttpHook struct {
