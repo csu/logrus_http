@@ -21,17 +21,14 @@ func NewHttpHook(endpoint string, formKey string, extraFields map[string]string)
 }
 
 func (hook *HttpHook) Fire(entry *logrus.Entry) error {
+  entry = entry.WithFields(hook.RequestExtraFields)
+
   line, err := entry.String()
   if err != nil {
     return err
   }
 
   reqForm := url.Values{}
-
-  // add in extra fields, if any
-  for k, v := range hook.RequestExtraFields {
-    reqForm.Set(k, v)
-  }
 
   // add log line
   reqForm.Set(hook.RequestFormKey, line)
