@@ -1,7 +1,6 @@
 package logrus_http
 
 import (
-  "fmt"
   "github.com/Sirupsen/logrus"
   "net/http"
   "net/url"
@@ -24,7 +23,6 @@ func NewHttpHook(endpoint string, formKey string, extraFields map[string]string)
 func (hook *HttpHook) Fire(entry *logrus.Entry) error {
   line, err := entry.String()
   if err != nil {
-    fmt.Fprintf(os.Stderr, "Unable to read entry, %v", err)
     return err
   }
 
@@ -40,7 +38,6 @@ func (hook *HttpHook) Fire(entry *logrus.Entry) error {
 
   resp, err := http.PostForm(hook.RequestEndpoint, reqForm)
   if err != nil {
-    fmt.Fprintf(os.Stderr, "Unable to post line to server, %v", err)
     return err
   }
   resp.Body.Close()
