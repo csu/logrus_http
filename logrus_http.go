@@ -1,23 +1,24 @@
 package logrus_http
 
 import (
-	"github.com/Sirupsen/logrus"
 	"net/http"
 	"net/url"
+
+	"github.com/Sirupsen/logrus"
 )
 
 type HttpHook struct {
-	RequestEndpoint string
-	RequestFormKey string
+	RequestEndpoint    string
+	RequestFormKey     string
 	RequestExtraFields map[string]string
-	LogExtraFields map[string]interface{}
+	LogExtraFields     map[string]interface{}
 }
 
 // Creates a hook to be added to an instance of logger. This is called with
 // `hook, err := NewHttpHook("http://log-server/post_new_log", "logBody")`
 // `if err == nil { log.Hooks.Add(hook) }`
 func NewHttpHook(endpoint string, formKey string, requestExtraFields map[string]string,
-extraLogFields map[string]interface{}) (*HttpHook, error) {
+	extraLogFields map[string]interface{}) (*HttpHook, error) {
 	return &HttpHook{endpoint, formKey, extraLogFields}, nil
 }
 
