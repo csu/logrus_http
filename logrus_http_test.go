@@ -1,25 +1,37 @@
 package logrus_http
 
 import (
-  "github.com/Sirupsen/logrus"
-  "testing"
+	"github.com/Sirupsen/logrus"
+	"testing"
+	"net/http"
+	"io"
 )
 
-func TestPrint(t *testing.T) {
-  log := logrus.New()
-  log.Formatter = new(logrus.JSONFormatter)
+func hello(w http.ResponseWriter, r *http.Request) {
+	// TODO: check for secret and extra log keys
+	io.WriteString(w, "Log received.")
+}
 
-  m := make(map[string]string)
-  m["secret"] = "example-secret-here"
+func TestHookCreateAndPost(t *testing.T) {
+	// start http server
+	mux := http.NewServeMux()
+	mux.HandleFunc("/log", hello)
+	go http.ListenAndServe(":3000", mux)
 
-  extras := make(map[string]interface{})
-  
-  hook, err := NewHttpHook("http://logserver.christopher.su/log", "logContent", m, extras)
-  if err != nil {
-    t.Errorf("Unable to create hook.")
-  }
+	log := logrus.New()
+	log.Formatter = new(logrus.JSONFormatter)
 
-  log.Hooks.Add(hook)
+	m := make(map[string]string)
+	m["secret"] = "example-secret-here"
 
-  log.Info("It worked!")
+	extras := make(map[string]interface{})
+	
+	hook, err := NewHttpHook("http://localhost:3000/log", "logContent", m, extras)
+	if err != nil {
+		t.Errorf("Unable to create hook.")
+	}
+
+	log.Hooks.Add(hook)
+
+	log.Info("It worked!")
 }
